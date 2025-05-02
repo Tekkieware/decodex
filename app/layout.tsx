@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "DeCodeX",
-  description: "Understand your code instantly with AI",
+  description: "Understand and correct your code instantly with AI",
 }
 
 export default function RootLayout({
