@@ -97,7 +97,7 @@
   }
 
   .code-line-highlight {
-    @apply bg-yellow-500/20 -mx-4 px-4 border-l-2 border-warning;
+    @apply bg-yellow-500/20 -mx-4 px-4 border-l-2 border-yellow-500;
   }
 
   .animate-float {

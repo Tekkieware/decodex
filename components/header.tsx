@@ -90,7 +90,7 @@ export function Header() {
       <div className="container flex items-center justify-between h-16 px-4 mx-auto">
         <Link href="/" className="flex items-center space-x-2">
           <Code2 className="w-6 h-6 text-primary" />
-          <span className="font-bold">AI Code Explainer</span>
+          <span className="font-bold">DeCodeX</span>
         </Link>
 
         <div className="flex items-center space-x-4">

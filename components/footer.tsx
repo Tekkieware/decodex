@@ -7,7 +7,7 @@ export function Footer() {
       <div className="container flex flex-col items-center justify-between px-4 mx-auto space-y-4 md:flex-row md:space-y-0">
         <div className="flex items-center space-x-2">
           <Code2 className="w-5 h-5 text-primary" />
-          <span className="font-semibold">AI Code Explainer</span>
+          <span className="font-semibold">DeCodeX</span>
         </div>
 
         <div className="flex items-center space-x-4">
