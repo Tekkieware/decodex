@@ -23,7 +23,6 @@ export default function AnalysisPage() {
   const codeEditorRef = useRef<any>(null)
 
   useEffect(() => {
-    // Get code from URL params if available
     const codeParam = searchParams.get("code")
     const langParam = searchParams.get("language")
 
@@ -35,7 +34,6 @@ export default function AnalysisPage() {
       setLanguage(langParam)
     }
 
-    // Simulate AI analysis
     if (code) {
       analyzeCode(code, language)
     }
@@ -45,8 +43,6 @@ export default function AnalysisPage() {
     setIsAnalyzing(true)
 
     try {
-      // In a real app, this would be an API call to your AI service
-      // For now, we'll simulate a response after a delay
       setTimeout(() => {
         setExplanation({
           summary: "This code appears to be a function that calculates the Fibonacci sequence recursively.",
@@ -103,7 +99,6 @@ export default function AnalysisPage() {
   const handleHighlightLine = (lineNumber: number) => {
     setHighlightedLine(lineNumber)
 
-    // Scroll to the highlighted line in the editor
     if (codeEditorRef.current) {
       codeEditorRef.current.revealLineInCenter(lineNumber)
     }
@@ -113,7 +108,6 @@ export default function AnalysisPage() {
     navigator.clipboard
       .writeText(code)
       .then(() => {
-        // Show a toast or notification that code was copied
         console.log("Code copied to clipboard")
       })
       .catch((err) => {
@@ -133,9 +127,8 @@ export default function AnalysisPage() {
         <h1 className="text-2xl font-bold">Code Analysis</h1>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-5">
-        {/* Left panel - Code Display */}
-        <div className="lg:col-span-2">
+      <div className="grid gap-6 lg:grid-cols-6">
+        <div className="lg:col-span-3">
           <Tabs defaultValue="code" className="w-full">
             <TabsList className="w-full">
               <TabsTrigger value="code" className="flex-1">
@@ -167,7 +160,6 @@ export default function AnalysisPage() {
           </Tabs>
         </div>
 
-        {/* Right panel - Analysis */}
         <div className="space-y-6 lg:col-span-3">
           <Tabs defaultValue="analysis" className="w-full">
             <TabsList className="w-full">
