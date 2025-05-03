@@ -18,8 +18,8 @@ export function HowItWorks() {
     },
     {
       icon: <Bug className="w-10 h-10 mb-4 text-primary" />,
-      title: "Intelligent Bug Detection",
-      description: "Identify potential issues, bugs, and optimization opportunities in your code.",
+      title: "Intelligent Bug Detection and Correction",
+      description: "Identify and correct potential issues, bugs, and find optimization opportunities in your code.",
     },
     {
       icon: <MessageSquare className="w-10 h-10 mb-4 text-primary" />,

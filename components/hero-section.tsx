@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useTheme } from "next-themes"
 import { Code, ArrowRight, Sparkles, Check, Zap } from "lucide-react"
 
-// Language icons and detection demo
 const languageExamples = [
   {
     name: "JavaScript",
@@ -175,8 +174,8 @@ def inorder(root):
         transition={{ duration: 0.5 }}
         className="max-w-4xl mx-auto relative z-10"
       >
-        <h1 className="mb-6 text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
-          Decode Code with <span className="gradient-text">AI</span>: Instant Explanations & Language Detection
+        <h1 className="mb-6 text-4xl font-extrabold tracking-tight sm:text-4xl md:text-5xl">
+          Decode Code with <span className="gradient-text">AI</span>: Instant Explanations, Corrections & Language Detection
         </h1>
 
         <p className="mb-8 text-xl text-muted-foreground max-w-2xl mx-auto">

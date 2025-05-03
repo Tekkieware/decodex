@@ -10,7 +10,6 @@ export default function HomePage() {
         <HeroSection />
         <CodeInputArea />
         <HowItWorks />
-        <Testimonials />
       </div>
     </main>
   )
