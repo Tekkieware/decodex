@@ -37,7 +37,7 @@ export default function AnalysisPage() {
     if (code) {
       analyzeCode(code, language)
     }
-  }, [searchParams])
+  }, [searchParams, code])
 
   const analyzeCode = async (codeToAnalyze: string, lang: string) => {
     setIsAnalyzing(true)
