@@ -6,7 +6,7 @@ import { Testimonials } from "@/components/testimonials"
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-background to-background/80">
-      <div className="container px-4 py-8 mx-auto max-w-7xl">
+      <div className="container px-4 py-8 mx-auto">
         <HeroSection />
         <CodeInputArea />
         <HowItWorks />

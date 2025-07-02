@@ -45,6 +45,7 @@ export default function AnalysisPage() {
     try {
       setTimeout(() => {
         setExplanation({
+          detected_language: "Javascipt",
           summary: "This code appears to be a function that calculates the Fibonacci sequence recursively.",
           functions: [
             {
@@ -67,6 +68,7 @@ export default function AnalysisPage() {
               message: "This recursive implementation has exponential time complexity O(2^n)",
               line: 3,
               suggestion: "Consider using memoization or an iterative approach for better performance",
+              corrected_Code: "Full code with applied suggestion."
             },
           ],
           logicFlow: [
@@ -116,7 +118,7 @@ export default function AnalysisPage() {
   }
 
   return (
-    <div className="container px-4 py-8 mx-auto max-w-7xl">
+    <div className="container px-4 py-8 mx-auto">
       <div className="flex items-center mb-6 space-x-4">
         <Link href="/">
           <Button variant="ghost" size="sm">
