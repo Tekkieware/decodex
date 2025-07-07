@@ -24,67 +24,63 @@ export default function AnalysisPage() {
 
   useEffect(() => {
     const codeParam = searchParams.get("code")
-    const langParam = searchParams.get("language")
 
     if (codeParam) {
       setCode(decodeURIComponent(codeParam))
     }
 
-    if (langParam) {
-      setLanguage(langParam)
-    }
-
     if (code) {
-      analyzeCode(code, language)
+      analyzeCode(code)
     }
   }, [searchParams, code])
 
-  const analyzeCode = async (codeToAnalyze: string, lang: string) => {
-    setIsAnalyzing(true)
+  const analyzeCode = async (codeToAnalyze: string) => {
+    setIsAnalyzing(true);
 
     try {
-      setTimeout(() => {
-        setExplanation({
-          detected_language: "Javascipt",
-          summary: "This code appears to be a function that calculates the Fibonacci sequence recursively.",
-          functions: [
-            {
-              name: "fibonacci",
-              explanation: "A recursive function that calculates the nth Fibonacci number.",
-              parameters: ["n - The position in the Fibonacci sequence to calculate"],
-              returns: "The nth Fibonacci number",
-            },
-          ],
-          variables: [
-            {
-              name: "n",
-              type: "number",
-              purpose: "Input parameter representing the position in the sequence",
-            },
-          ],
-          bugs: [
-            {
-              type: "warning",
-              message: "This recursive implementation has exponential time complexity O(2^n)",
-              line: 3,
-              suggestion: "Consider using memoization or an iterative approach for better performance",
-              corrected_Code: "Full code with applied suggestion."
-            },
-          ],
-          logicFlow: [
-            { step: 1, description: "Check if n is less than or equal to 1" },
-            { step: 2, description: "If true, return n (base case)" },
-            { step: 3, description: "If false, recursively call fibonacci(n-1) and fibonacci(n-2)" },
-            { step: 4, description: "Return the sum of these two recursive calls" },
-          ],
-        })
-        setIsAnalyzing(false)
-      }, 2000)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/analyze`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ code: codeToAnalyze }),
+      });
+
+      const result = await response.json();
+
+      if (result.status !== "sent") {
+        throw new Error(result.detail || "Failed to start analysis");
+      }
+
+      const analysisId = result.analysis_id;
+
+      const socket = new WebSocket(`${process.env.NEXT_PUBLIC_API_BASE_URL}/a/${analysisId}`);
+
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        setExplanation(data);
+
+        if (data.detected_language) {
+          setLanguage(data.detected_language.toLowerCase());
+        }
+
+        setIsAnalyzing(false);
+        socket.close();
+      };
+
+      socket.onerror = (err) => {
+        console.error("WebSocket error:", err);
+        setIsAnalyzing(false);
+      };
+
     } catch (error) {
-      console.error("Error analyzing code:", error)
-      setIsAnalyzing(false)
+      console.error("Error analyzing code:", error);
+      setIsAnalyzing(false);
     }
-  }
+  };
+
+
+
 
   const handleCodeChange = (newCode: string) => {
     setCode(newCode)
@@ -95,7 +91,7 @@ export default function AnalysisPage() {
   }
 
   const handleReanalyze = () => {
-    analyzeCode(code, language)
+    analyzeCode(code)
   }
 
   const handleHighlightLine = (lineNumber: number) => {
@@ -146,14 +142,14 @@ export default function AnalysisPage() {
             <TabsContent value="code" className="mt-4">
               <CodeDisplay
                 code={code}
-                language={language}
+                language={explanation?.detected_language?.toLowerCase() || language}
                 onCodeChange={handleCodeChange}
-                onLanguageChange={handleLanguageChange}
                 onReanalyze={handleReanalyze}
                 highlightedLine={highlightedLine}
                 editorRef={codeEditorRef}
                 onCopyCode={handleCopyCode}
               />
+
             </TabsContent>
 
             <TabsContent value="learn" className="mt-4">

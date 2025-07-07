@@ -9,6 +9,10 @@ import { Badge } from "@/components/ui/badge"
 import { RefreshCw, Copy, Check, ExternalLink, Code } from "lucide-react"
 import { useState, useEffect } from "react"
 import dynamic from "next/dynamic"
+import type { editor } from "monaco-editor"
+
+
+
 
 // Dynamically import Monaco Editor to avoid SSR issues
 const MonacoEditor = dynamic(() => import("@monaco-editor/react").then((mod) => mod.default), { ssr: false })
@@ -17,7 +21,6 @@ interface CodeDisplayProps {
   code: string
   language: string
   onCodeChange: (code: string) => void
-  onLanguageChange: (language: string) => void
   onReanalyze: () => void
   highlightedLine?: number | null
   editorRef?: React.MutableRefObject<any>
@@ -50,14 +53,13 @@ export function CodeDisplay({
   code,
   language,
   onCodeChange,
-  onLanguageChange,
   onReanalyze,
   highlightedLine,
   editorRef,
   onCopyCode,
 }: CodeDisplayProps) {
   const [copied, setCopied] = useState(false)
-  const [editorOptions, setEditorOptions] = useState({
+  const [editorOptions, setEditorOptions] = useState<editor.IStandaloneEditorConstructionOptions>({
     minimap: { enabled: false },
     scrollBeyondLastLine: false,
     fontSize: 14,
@@ -72,7 +74,6 @@ export function CodeDisplay({
 
   useEffect(() => {
     if (highlightedLine) {
-      // Update editor options to highlight the line
       setEditorOptions((prev) => ({
         ...prev,
         renderLineHighlight: "all",
@@ -91,7 +92,6 @@ export function CodeDisplay({
       editorRef.current = editor
     }
 
-    // Add custom CSS for line highlighting
     editor.onDidChangeModelContent(() => {
       if (highlightedLine) {
         const lineElement = document.querySelector(`.view-line[linenumber="${highlightedLine}"]`)
@@ -141,21 +141,11 @@ export function CodeDisplay({
       </CardHeader>
       <CardContent className="p-0">
         <div className="p-3 bg-muted/10 border-y flex items-center justify-between">
-          <Select value={language} onValueChange={onLanguageChange}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select Language" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="javascript">📜 JavaScript</SelectItem>
-              <SelectItem value="typescript">🔷 TypeScript</SelectItem>
-              <SelectItem value="python">🐍 Python</SelectItem>
-              <SelectItem value="java">☕ Java</SelectItem>
-              <SelectItem value="csharp">🔧 C#</SelectItem>
-              <SelectItem value="cpp">⚙️ C++</SelectItem>
-              <SelectItem value="go">🔵 Go</SelectItem>
-              <SelectItem value="rust">⚓ Rust</SelectItem>
-            </SelectContent>
-          </Select>
+          <Badge variant="outline" className="text-xs font-normal flex items-center">
+            <span className="mr-1">{LANGUAGE_ICONS[language] || "🔍"}</span>
+            {language.charAt(0).toUpperCase() + language.slice(1)}
+          </Badge>
+
 
           <div className="flex items-center space-x-2">
             <Button variant="outline" size="sm" onClick={handleCopyClick} className="flex items-center">
