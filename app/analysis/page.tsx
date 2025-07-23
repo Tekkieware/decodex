@@ -76,143 +76,122 @@ export default function AnalysisPage() {
 
   // Enhanced progress simulation with realistic stages
   const simulateProgress = useCallback(() => {
-    setAnalysisProgress(0)
-    let progress = 0
-    let stageIndex = 0
+    setAnalysisProgress(0);
+    let stageIndex = 0;
+    let currentProgress = 0; // track progress across stages
+    const FINAL_HOLD_POINT = 90; // stop here until real results come
 
     const stages = [
-      { text: "🔍 Parsing code structure...", duration: 2500, target: 10 },
-      { text: "🧠 Analyzing functions and methods...", duration: 3000, target: 15 },
-      { text: "🔬 Detecting patterns and anti-patterns...", duration: 2800, target: 25 },
-      { text: "🎯 Identifying variables and scope...", duration: 2200, target: 50 },
-      { text: "🔄 Mapping control flow and logic...", duration: 2500, target: 63 },
-      { text: "🐛 Scanning for potential issues...", duration: 1800, target: 71 },
-      { text: "✨ Generating AI insights...", duration: 1500, target: 85 },
-      { text: "🎉 Finalizing comprehensive analysis...", duration: 1000, target: 100 },
-    ]
+      { text: "🚀 Starting code analysis...", target: 5, duration: 1000 },
+      { text: "🔌 Connecting to analysis engine...", target: 10, duration: 1500 },
+      { text: "📤 Sending code for processing...", target: 30, duration: 2000 },
+      { text: "⏳ Waiting for response...", target: 50, duration: 2500 },
+      { text: "📥 Receiving insights...", target: 70, duration: 1800 },
+      { text: "🎉 Finalizing report...", target: FINAL_HOLD_POINT, duration: 2000 }, // stop at 90%
+    ];
 
-    // Generate more particles for enhanced effect
-    const newParticles = Array.from({ length: 25 }, (_, i) => ({
+    const newParticles = Array.from({ length: 20 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,
       delay: Math.random() * 3,
-    }))
-    setParticles(newParticles)
+    }));
+    setParticles(newParticles);
 
-    if (progressIntervalRef.current !== null) {
-      clearInterval(progressIntervalRef.current)
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
     }
 
-    const updateProgress = () => {
-      const currentStage = stages[stageIndex]
-      if (currentStage) {
-        setAnalysisStage(currentStage.text)
-      }
+    const advanceStage = () => {
+      const stage = stages[stageIndex];
+      if (!stage) return;
 
-      const targetProgress = currentStage?.target || 100
-      const steps = 40 // More steps for smoother animation
-      const increment = (targetProgress - progress) / steps
+      setAnalysisStage(stage.text);
 
-      let stepCount = 0
-      progressIntervalRef.current = setInterval(
-        () => {
-          stepCount++
-          progress += increment * (1 + Math.random() * 0.3) // Add some randomness
-          setAnalysisProgress(Math.min(progress, targetProgress))
+      const start = currentProgress;
+      const end = stage.target;
+      const steps = 30;
+      const increment = (end - start) / steps;
+      let currentStep = 0;
 
-          if (progress >= targetProgress - 1 || stepCount >= steps) {
-            clearInterval(progressIntervalRef.current!)
-            stageIndex++
-            if (stageIndex < stages.length) {
-              setTimeout(updateProgress, 300) // Slight pause between stages
-            }
+      progressIntervalRef.current = setInterval(() => {
+        currentStep++;
+        currentProgress = start + increment * currentStep;
+        setAnalysisProgress(Math.min(currentProgress, end));
+
+        if (currentStep >= steps) {
+          clearInterval(progressIntervalRef.current!);
+          stageIndex++;
+          if (stageIndex < stages.length) {
+            setTimeout(advanceStage, 300);
           }
-        },
-        currentStage?.duration / steps || 60,
-      )
-    }
+        }
+      }, stage.duration / steps);
+    };
 
-    updateProgress()
-  }, [])
+    advanceStage();
+  }, []);
+
+
 
   const analyzeCode = async (codeToAnalyze: string) => {
-    setIsAnalyzing(true)
-    setConnectionStatus("connecting")
-    setAnalysisProgress(0)
-    simulateProgress()
+    setIsAnalyzing(true);
+    setConnectionStatus("connecting");
+    setAnalysisProgress(0);
+    simulateProgress();
 
     try {
+      setAnalysisStage("🚀 Starting code analysis...");
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/analyze`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code: codeToAnalyze }),
-      })
+      });
 
-      const result = await response.json()
+      setAnalysisStage("📤 Sending code for processing...");
 
+      const result = await response.json();
       if (result.status !== "sent") {
-        throw new Error(result.detail || "Failed to start analysis")
+        throw new Error(result.detail || "Failed to start analysis");
       }
 
-      const analysisId = result.analysis_id
-      setConnectionStatus("connected")
+      const analysisId = result.analysis_id;
+      setAnalysisStage("🔌 Connecting to analysis engine...");
+      setConnectionStatus("connected");
       router.replace(`/analysis/${analysisId}`);
-      const socket = new WebSocket(`${process.env.NEXT_PUBLIC_API_BASE_URL}/a/${analysisId}`)
+
+      const socket = new WebSocket(`${process.env.NEXT_PUBLIC_API_BASE_URL}/a/${analysisId}`);
 
       socket.onopen = () => {
-        setConnectionStatus("connected")
-        toast({
-          title: "🚀 Analysis Started",
-          description: "Your code is being analyzed with advanced AI...",
-        })
-      }
+        setAnalysisStage("⏳ Waiting for results...");
+      };
 
       socket.onmessage = (event) => {
-        const data = JSON.parse(event.data)
-        setExplanation(data)
+        const data = JSON.parse(event.data);
+        setAnalysisStage("📥 Receiving insights...");
+        setExplanation(data);
 
         if (data.detected_language) {
-          setLanguage(data.detected_language.toLowerCase())
+          setLanguage(data.detected_language.toLowerCase());
         }
 
-        setAnalysisProgress(100)
-        setAnalysisStage("🎉 Analysis complete!")
-        setIsAnalyzing(false)
-        setConnectionStatus("idle")
-        setRetryCount(0)
-        setParticles([])
-
-        if (progressIntervalRef.current) {
-          clearInterval(progressIntervalRef.current)
-        }
-
+        setAnalysisStage("🎉 Finalizing report...");
+        setAnalysisProgress(100);
+        setIsAnalyzing(false);
+        setConnectionStatus("idle");
+        setParticles([]);
         toast({
           title: "✨ Analysis Complete!",
-          description: "Your code has been successfully analyzed with AI insights",
-        })
-
-        socket.close()
-      }
-
-      socket.onerror = (err) => {
-        console.error("WebSocket error:", err)
-        handleAnalysisError()
-        socket.close()
-      }
-
-      socket.onclose = (event) => {
-        if (event.code !== 1000 && isAnalyzing) {
-          handleAnalysisError()
-        }
-      }
+          description: "Your code has been successfully analyzed.",
+        });
+        socket.close();
+      };
     } catch (error) {
-      console.error("Error analyzing code:", error)
-      handleAnalysisError()
+      console.error("Error analyzing code:", error);
+      handleAnalysisError();
     }
-  }
+  };
 
   const handleAnalysisError = () => {
     setIsAnalyzing(false)
@@ -495,7 +474,7 @@ export default function AnalysisPage() {
             <TabsContent value="code" className="mt-4">
               <CodeDisplay
                 code={code}
-                language={explanation?.detected_language?.toLowerCase() || "Unknown"}
+                language={explanation?.detected_language?.toLowerCase() || "Detecting...."}
                 onCodeChange={handleCodeChange}
                 onReanalyze={handleReanalyze}
                 highlightedLine={highlightedLine}
