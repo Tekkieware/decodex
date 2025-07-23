@@ -180,7 +180,7 @@ export function Header() {
                 </motion.div>
 
                 <motion.div variants={menuItemVariants} className="pt-4 mt-4 border-t">
-                  <Link href="https://github.com" target="_blank" className="w-full">
+                  <Link href="https://github.com/Tekkieware" target="_blank" className="w-full">
                     <Button variant="outline" className="w-full justify-start">
                       <Github className="w-5 h-5 mr-2" />
                       GitHub
