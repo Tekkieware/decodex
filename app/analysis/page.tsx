@@ -1,8 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef, useCallback } from "react"
-import { useSearchParams } from "next/navigation"
-import { CodeDisplay } from "@/components/code-display"
+import { CodeInputArea } from "@/components/code-input-area"
 import { AIExplanation } from "@/components/ai-explanation"
 import { BugDetection } from "@/components/bug-detection"
 import { InteractiveFeatures } from "@/components/interactive-features"
@@ -13,10 +12,15 @@ import Link from "next/link"
 import { LearnMoreSection } from "@/components/learn-more-section"
 import { useToast } from "@/hooks/use-toast"
 import { motion, AnimatePresence } from "framer-motion"
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../../lib/store/store';
+import { useRouter } from "next/navigation"
+import { CodeDisplay } from "@/components/code-display"
 
 export default function AnalysisPage() {
-  const searchParams = useSearchParams()
-  const [code, setCode] = useState<string>("")
+  const dispatch = useDispatch();
+  const initialCode = useSelector((state: RootState) => state.code.code);
+  const [code, setCode] = useState<string>(initialCode);
   const [language, setLanguage] = useState<string>("javascript")
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisProgress, setAnalysisProgress] = useState(0)
@@ -35,6 +39,8 @@ export default function AnalysisPage() {
   const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; delay: number }>>([])
   const { toast } = useToast()
 
+  const router = useRouter()
+
 
 
   // Debounced code analysis
@@ -51,15 +57,11 @@ export default function AnalysisPage() {
   }, [])
 
   useEffect(() => {
-    const codeParam = searchParams.get("code")
-    if (codeParam) {
-      const decodedCode = decodeURIComponent(codeParam)
-      setCode(decodedCode)
-      if (decodedCode.trim()) {
-        debouncedAnalyze(decodedCode)
-      }
+    if (initialCode && initialCode.trim()) {
+      setCode(initialCode);
+      debouncedAnalyze(initialCode);
     }
-  }, [searchParams, debouncedAnalyze])
+  }, [initialCode, debouncedAnalyze]);
 
   // Auto-save functionality
   useEffect(() => {
@@ -157,7 +159,7 @@ export default function AnalysisPage() {
 
       const analysisId = result.analysis_id
       setConnectionStatus("connected")
-
+      router.replace(`/analysis/${analysisId}`);
       const socket = new WebSocket(`${process.env.NEXT_PUBLIC_API_BASE_URL}/a/${analysisId}`)
 
       socket.onopen = () => {
@@ -493,7 +495,7 @@ export default function AnalysisPage() {
             <TabsContent value="code" className="mt-4">
               <CodeDisplay
                 code={code}
-                language={explanation?.detected_language?.toLowerCase() || language}
+                language={explanation?.detected_language?.toLowerCase() || "Unknown"}
                 onCodeChange={handleCodeChange}
                 onReanalyze={handleReanalyze}
                 highlightedLine={highlightedLine}

@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { useRouter } from "next/navigation"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -143,8 +142,11 @@ interface CodeHistory {
   name: string
 }
 
-export function CodeInputArea() {
-  const router = useRouter()
+interface CodeInputAreaProps {
+  onAnalyze: (code: string) => void;
+}
+
+export function CodeInputArea({ onAnalyze }: CodeInputAreaProps) {
   const [code, setCode] = useState("")
   const [language, setLanguage] = useState("javascript")
   const [isLoading, setIsLoading] = useState(false)
@@ -352,10 +354,7 @@ export function CodeInputArea() {
     }, 200)
 
     // Navigate to analysis page
-    setTimeout(() => {
-      const encodedCode = encodeURIComponent(code)
-      router.push(`/analysis?code=${encodedCode}&language=${detectedLanguage || language}`)
-    }, 1000)
+    onAnalyze(code);
   }
 
   const handleUseSampleCode = (lang: string) => {
@@ -635,7 +634,7 @@ export function CodeInputArea() {
         {/* Monaco Editor */}
         <div className="border-0 min-h-[350px] relative">
           <MonacoEditor
-            height="350px"
+            height="500px"
             language={language}
             value={code}
             onChange={handleEditorChange}
