@@ -31,7 +31,8 @@ The backend for this project can be found here:
 
 - [Next.js](https://nextjs.org/) – React-based framework for building scalable web apps.  
 - [TypeScript](https://www.typescriptlang.org/) – Type-safe JavaScript for maintainability.  
-- [Redux Toolkit](https://redux-toolkit.js.org/) – Simplified state management.  
+- [Redux Toolkit](https://redux-toolkit.js.org/) – Simplified state management.
+- [Tailwind CSS](https://tailwindcss.com/) – Consistent styling.  
 
 ---
 
