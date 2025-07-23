@@ -59,3 +59,24 @@ cd decodex-frontend
 npm install
 # or
 yarn install
+```
+### 3. Environment Variables
+
+Create a .env.local file in the root directory and add the backend URL:
+
+```bash
+NEXT_PUBLIC_BACKEND_URL=<your-backend-url>
+
+```
+
+### 4. Running the Development Server
+
+Start the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+```
+Now open http://localhost:3000 in your browser.
+
