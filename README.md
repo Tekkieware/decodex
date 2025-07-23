@@ -65,7 +65,7 @@ yarn install
 Create a .env.local file in the root directory and add the backend URL:
 
 ```bash
-NEXT_PUBLIC_BACKEND_URL=<your-backend-url>
+NEXT_PUBLIC_BACKEND_URL=<backend-url>
 
 ```
 
